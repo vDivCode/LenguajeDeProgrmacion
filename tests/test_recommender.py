@@ -1,32 +1,31 @@
-from recommender.data.careers import CAREERS
-from recommender.logic_rules.rules import infer_candidate_careers
-from recommender.processor.recommender import rank_careers
+from recommender.datos import CARRERAS
+from recommender.logica import inferir_carreras_candidatas, clasificar_carreras
 
-def test_recommends_systems_first_for_technology_profile():
-    profile = {
-        "interests": ["tecnologia", "matematicas", "innovacion"],
-        "skills": ["logica", "analisis", "resolucion_problemas"],
-        "work_styles": ["remoto", "proyectos"]
+def test_recomienda_sistemas_primero_para_perfil_tecnologico():
+    perfil = {
+        "intereses": ["tecnologia", "matematicas", "innovacion"],
+        "habilidades": ["logica", "analisis", "resolucion_problemas"],
+        "estilos_trabajo": ["remoto", "proyectos"]
     }
 
-    logical_candidates = infer_candidate_careers(profile, CAREERS)
-    ranking = rank_careers(CAREERS, profile, logical_candidates)
+    candidatas_logicas = inferir_carreras_candidatas(perfil, CARRERAS)
+    clasificacion = clasificar_carreras(CARRERAS, perfil, candidatas_logicas)
 
-    assert ranking
-    assert ranking[0]["id"] == "sistemas"
+    assert clasificacion
+    assert clasificacion[0]["id"] == "sistemas"
 
-def test_recommends_health_area_for_health_profile():
-    profile = {
-        "interests": ["salud", "personas", "servicio"],
-        "skills": ["empatia", "disciplina", "paciencia"],
-        "work_styles": ["hospital", "presencial"]
+def test_recomienda_area_salud_para_perfil_saludable():
+    perfil = {
+        "intereses": ["salud", "personas", "servicio"],
+        "habilidades": ["empatia", "disciplina", "paciencia"],
+        "estilos_trabajo": ["hospital", "presencial"]
     }
 
-    logical_candidates = infer_candidate_careers(profile, CAREERS)
-    ranking = rank_careers(CAREERS, profile, logical_candidates)
+    candidatas_logicas = inferir_carreras_candidatas(perfil, CARRERAS)
+    clasificacion = clasificar_carreras(CARRERAS, perfil, candidatas_logicas)
 
-    assert ranking
-    assert ranking[0]["area"] == "Salud"
+    assert clasificacion
+    assert clasificacion[0]["area"] == "Salud"
 
-def test_knowledge_base_has_minimum_ten_items():
-    assert len(CAREERS) >= 10
+def test_base_conocimiento_tiene_minimo_diez_items():
+    assert len(CARRERAS) >= 10

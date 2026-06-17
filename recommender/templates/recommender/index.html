@@ -7,7 +7,7 @@
         Selecciona tus intereses, habilidades y estilo de trabajo. El sistema usará reglas lógicas,
         procesamiento funcional y un controlador imperativo para recomendarte carreras.
     </p>
-    <p class="small">Base de conocimiento: {{ total_careers }} carreras profesionales.</p>
+    <p class="small">Base de conocimiento: {{ total_carreras }} carreras profesionales.</p>
 </section>
 
 <form method="POST" action="{% url 'recommend' %}" class="card">
@@ -15,22 +15,22 @@
 
     <h2>1. Intereses</h2>
     <div class="grid">
-        {% for value, label in options.interests %}
-        <label><input type="checkbox" name="interests" value="{{ value }}"> {{ label }}</label>
+        {% for value, label in opciones.intereses %}
+        <label><input type="checkbox" name="intereses" value="{{ value }}"> {{ label }}</label>
         {% endfor %}
     </div>
 
     <h2>2. Habilidades</h2>
     <div class="grid">
-        {% for value, label in options.skills %}
-        <label><input type="checkbox" name="skills" value="{{ value }}"> {{ label }}</label>
+        {% for value, label in opciones.habilidades %}
+        <label><input type="checkbox" name="habilidades" value="{{ value }}"> {{ label }}</label>
         {% endfor %}
     </div>
 
     <h2>3. Estilo de trabajo preferido</h2>
     <div class="grid">
-        {% for value, label in options.work_styles %}
-        <label><input type="checkbox" name="work_styles" value="{{ value }}"> {{ label }}</label>
+        {% for value, label in opciones.estilos_trabajo %}
+        <label><input type="checkbox" name="estilos_trabajo" value="{{ value }}"> {{ label }}</label>
         {% endfor %}
     </div>
 
