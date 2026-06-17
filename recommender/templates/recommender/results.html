@@ -1,0 +1,38 @@
+{% extends "recommender/base.html" %}
+
+{% block content %}
+<section class="hero">
+    <span class="badge">Resultado final visible</span>
+    <h1>Recomendación de carrera profesional</h1>
+    <p>El sistema evaluó tus respuestas sobre una base de {{ total_careers }} carreras.</p>
+</section>
+
+{% if recommendations %}
+    {% for career in recommendations %}
+        <article class="result-card">
+            <div class="score">{{ career.score }} pts</div>
+            <h2>{{ forloop.counter }}. {{ career.name }}</h2>
+            <p>{{ career.description }}</p>
+            <p><strong>Área:</strong> {{ career.area }}</p>
+            <p><strong>Intereses coincidentes:</strong> {{ career.matches.interests|join:", "|default:"Ninguno" }}</p>
+            <p><strong>Habilidades coincidentes:</strong> {{ career.matches.skills|join:", "|default:"Ninguna" }}</p>
+            <p><strong>Estilo coincidente:</strong> {{ career.matches.work_styles|join:", "|default:"Ninguno" }}</p>
+            <p>
+                <strong>Inferencia lógica:</strong>
+                {% if career.matches.logical_inference %}
+                    Sí, pyDatalog la identificó como carrera candidata.
+                {% else %}
+                    No.
+                {% endif %}
+            </p>
+        </article>
+    {% endfor %}
+{% else %}
+    <article class="card">
+        <h2>No se encontraron coincidencias suficientes</h2>
+        <p>Vuelve al formulario y selecciona más intereses, habilidades o estilos.</p>
+    </article>
+{% endif %}
+
+<a class="back" href="{% url 'index' %}">Volver al formulario</a>
+{% endblock %}

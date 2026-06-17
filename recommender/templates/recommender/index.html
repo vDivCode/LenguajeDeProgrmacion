@@ -1,0 +1,57 @@
+{% extends "recommender/base.html" %}
+
+{% block content %}
+<section class="hero">
+    <h1>Sistema de Recomendación de Carrera Profesional</h1>
+    <p>
+        Selecciona tus intereses, habilidades y estilo de trabajo. El sistema usará reglas lógicas,
+        procesamiento funcional y un controlador imperativo para recomendarte carreras.
+    </p>
+    <p class="small">Base de conocimiento: {{ total_careers }} carreras profesionales.</p>
+</section>
+
+<form method="POST" action="{% url 'recommend' %}" class="card">
+    {% csrf_token %}
+
+    <h2>1. Intereses</h2>
+    <div class="grid">
+        {% for value, label in options.interests %}
+        <label><input type="checkbox" name="interests" value="{{ value }}"> {{ label }}</label>
+        {% endfor %}
+    </div>
+
+    <h2>2. Habilidades</h2>
+    <div class="grid">
+        {% for value, label in options.skills %}
+        <label><input type="checkbox" name="skills" value="{{ value }}"> {{ label }}</label>
+        {% endfor %}
+    </div>
+
+    <h2>3. Estilo de trabajo preferido</h2>
+    <div class="grid">
+        {% for value, label in options.work_styles %}
+        <label><input type="checkbox" name="work_styles" value="{{ value }}"> {{ label }}</label>
+        {% endfor %}
+    </div>
+
+    <button type="submit">Obtener recomendación</button>
+</form>
+
+<section class="explanation">
+    <h2>¿Dónde se evidencia cada paradigma?</h2>
+    <div class="columns">
+        <article>
+            <h3>Imperativo / OO</h3>
+            <p>El controlador recibe la petición, coordina los módulos y envía la respuesta a la interfaz.</p>
+        </article>
+        <article>
+            <h3>Funcional</h3>
+            <p>El ranking usa funciones puras, map(), filter(), reduce() y lambda.</p>
+        </article>
+        <article>
+            <h3>Lógico</h3>
+            <p>pyDatalog infiere carreras candidatas mediante hechos y reglas.</p>
+        </article>
+    </div>
+</section>
+{% endblock %}
