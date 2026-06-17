@@ -1,5 +1,5 @@
 from pathlib import Path
-# pyrefly: ignore [missing-import]
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-career-recommender-dev-key"
@@ -9,27 +9,6 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "recommender",
-]
-
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-]
-
-ROOT_URLCONF = "career_recommender.urls"
-
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.request",
-            ],
-        },
-    },
 ]
 
 WSGI_APPLICATION = "career_recommender.wsgi.application"
