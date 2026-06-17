@@ -14,7 +14,7 @@ import json
 from django.shortcuts import render, redirect
 from django.views import View
 from django.http import JsonResponse
-from test_vocacional.controller import TestVocacionalController
+from test_vocacional.paradigmas.controlador_imperativo import TestVocacionalController
 
 
 # ---------------------------------------------------------------------------

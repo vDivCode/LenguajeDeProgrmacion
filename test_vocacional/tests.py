@@ -2,13 +2,14 @@ from django.test import TestCase, Client
 from django.urls import reverse
 import json
 
-# Monkeypatch django.test.client.store_rendered_templates to avoid Python 3.14 copy(context) bug
+# pyrefly: ignore [import]
 import django.test.client
+# Monkeypatch django.test.client.store_rendered_templates to avoid Python 3.14 copy(context) bug
 django.test.client.store_rendered_templates = lambda *args, **kwargs: None
 
-from test_vocacional.logic_rules import obtener_candidatos, obtener_candidatos_pyDatalog
-from test_vocacional.processor import procesar_recomendaciones, calcular_resumen_perfil
-from test_vocacional.controller import TestVocacionalController
+from test_vocacional.paradigmas.reglas_logicas import obtener_candidatos, obtener_candidatos_pyDatalog
+from test_vocacional.paradigmas.procesador_funcional import procesar_recomendaciones, calcular_resumen_perfil
+from test_vocacional.paradigmas.controlador_imperativo import TestVocacionalController
 
 class ParadigmaLogicoTest(TestCase):
     def setUp(self):
