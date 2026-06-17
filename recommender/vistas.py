@@ -1,16 +1,10 @@
-# pyrefly: ignore [missing-import]
 from django.shortcuts import render
-# pyrefly: ignore [missing-import]
 from django.views.decorators.http import require_http_methods
-# pyrefly: ignore [missing-import]
-from django.utils.decorators import method_decorator
+from .datos import CARRERAS
+from .logica import inferir_carreras_candidatas, clasificar_carreras
 
-from recommender.data.careers import CAREERS
-from recommender.logic_rules.rules import infer_candidate_careers
-from recommender.processor.recommender import rank_careers
-
-OPTIONS = {
-    "interests": [
+OPCIONES = {
+    "intereses": [
         ("tecnologia", "Tecnología"),
         ("matematicas", "Matemáticas"),
         ("innovacion", "Innovación"),
@@ -37,7 +31,7 @@ OPTIONS = {
         ("procesos", "Procesos"),
         ("idiomas", "Idiomas")
     ],
-    "skills": [
+    "habilidades": [
         ("logica", "Lógica"),
         ("analisis", "Análisis"),
         ("resolucion_problemas", "Resolución de problemas"),
@@ -58,7 +52,7 @@ OPTIONS = {
         ("paciencia", "Paciencia"),
         ("negociacion", "Negociación")
     ],
-    "work_styles": [
+    "estilos_trabajo": [
         ("oficina", "Oficina"),
         ("remoto", "Remoto"),
         ("proyectos", "Trabajo por proyectos"),
@@ -71,28 +65,27 @@ OPTIONS = {
     ]
 }
 
-class CareerController:
-    @method_decorator(require_http_methods(["GET"]))
-    def index(self, request):
-        return render(request, "recommender/index.html", {
-            "options": OPTIONS,
-            "total_careers": len(CAREERS)
-        })
+@require_http_methods(["GET"])
+def inicio(request):
+    return render(request, "recommender/index.html", {
+        "opciones": OPCIONES,
+        "total_carreras": len(CARRERAS)
+    })
 
-    @method_decorator(require_http_methods(["POST"]))
-    def recommend(self, request):
-        user_profile = {
-            "interests": request.POST.getlist("interests"),
-            "skills": request.POST.getlist("skills"),
-            "work_styles": request.POST.getlist("work_styles")
-        }
+@require_http_methods(["POST"])
+def recomendar(request):
+    perfil_usuario = {
+        "intereses": request.POST.getlist("intereses"),
+        "habilidades": request.POST.getlist("habilidades"),
+        "estilos_trabajo": request.POST.getlist("estilos_trabajo")
+    }
 
-        logical_candidates = infer_candidate_careers(user_profile, CAREERS)
-        recommendations = rank_careers(CAREERS, user_profile, logical_candidates)
+    candidatas_logicas = inferir_carreras_candidatas(perfil_usuario, CARRERAS)
+    recomendaciones = clasificar_carreras(CARRERAS, perfil_usuario, candidatas_logicas)
 
-        return render(request, "recommender/results.html", {
-            "profile": user_profile,
-            "recommendations": recommendations,
-            "logical_candidates": logical_candidates,
-            "total_careers": len(CAREERS)
-        })
+    return render(request, "recommender/results.html", {
+        "perfil": perfil_usuario,
+        "recomendaciones": recomendaciones,
+        "candidatas_logicas": candidatas_logicas,
+        "total_carreras": len(CARRERAS)
+    })

@@ -1,10 +1,7 @@
-# pyrefly: ignore [missing-import]
 from django.urls import path
-from recommender.controllers.career_controller import CareerController
-
-controller = CareerController()
+from recommender import vistas
 
 urlpatterns = [
-    path("", controller.index, name="index"),
-    path("recommend/", controller.recommend, name="recommend"),
+    path("", vistas.inicio, name="index"),
+    path("recommend/", vistas.recomendar, name="recommend"),
 ]
