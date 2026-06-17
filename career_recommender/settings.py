@@ -13,6 +13,29 @@ INSTALLED_APPS = [
 
 WSGI_APPLICATION = "career_recommender.wsgi.application"
 
+ROOT_URLCONF = "career_recommender.urls"
+
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+            ],
+        },
+    },
+]
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
