@@ -1,9 +1,13 @@
+{# Componente: Barra de navegación principal #}
 <nav class="navbar" role="navigation" aria-label="Navegación principal">
-        <a href="/" class="navbar-brand" id="nav-home-link">
-            <span class="brand-icon"></span> Brújula Vocacional
+    <div class="navbar-container">
+        <a href="/" class="navbar-brand" id="nav-brand-home">
+            <span class="navbar-logo" aria-hidden="true">🧭</span>
+            <span class="navbar-title">Brújula Vocacional</span>
         </a>
-        <ul class="navbar-links">
-            <li><a href="/" id="nav-inicio">Inicio</a></li>
-            <li><a href="/test/" id="nav-test">Tomar el Test</a></li>
+        <ul class="navbar-links" role="list">
+            <li><a href="/" class="nav-link" id="nav-link-inicio">Inicio</a></li>
+            <li><a href="/test/" class="nav-link nav-link-cta" id="nav-link-test">Hacer el Test</a></li>
         </ul>
-    </nav>
+    </div>
+</nav>
