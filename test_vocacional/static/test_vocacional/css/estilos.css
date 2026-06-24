@@ -77,10 +77,16 @@ body::before {
     backdrop-filter: blur(8px);
     border-bottom: 2px solid var(--clr-line-h);
     padding: 0.75rem 2rem;
+    box-shadow: 0 2px 12px var(--clr-shadow);
+}
+
+/* Contenedor interno del navbar — maneja el layout flex */
+.navbar-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 2px 12px var(--clr-shadow);
+    width: 100%;
+    max-width: 100%;
 }
 
 .navbar-brand {
