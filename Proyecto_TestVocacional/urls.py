@@ -1,5 +1,5 @@
 """
-URL configuration for Proyecto_TestVocacional project.
+Configuración de URLs del proyecto Proyecto_TestVocacional.
 """
 from django.contrib import admin
 from django.urls import path, include
