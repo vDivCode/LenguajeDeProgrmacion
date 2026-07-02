@@ -10,6 +10,7 @@ Si Supabase no está disponible, usa constantes.py como fallback.
 
 import logging
 from functools import lru_cache
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 # ─────────────────────────────────────────────────────────
 
 @lru_cache(maxsize=1)
-def _cargar_datos_supabase() -> dict | None:
+def _cargar_datos_supabase() -> Optional[dict]:
     """
     Hace un único request a Supabase al arrancar y guarda todo en memoria.
     Retorna None si falla, para activar el fallback.

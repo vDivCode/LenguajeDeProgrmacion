@@ -8,6 +8,7 @@ Cliente de Supabase para guardar usuarios y resultados del test vocacional.
 
 import os
 import logging
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ def get_client():
         return None
 
 
-def guardar_usuario(nombre: str, email: str = "", edad: int = None, pais: str = "Perú") -> str | None:
+def guardar_usuario(nombre: str, email: str = "", edad: int = None, pais: str = "Perú") -> Optional[str]:
     """
     Inserta un nuevo usuario en la tabla usuarios_test.
     Retorna el UUID del usuario creado, o None si falla.
@@ -74,7 +75,7 @@ def guardar_usuario(nombre: str, email: str = "", edad: int = None, pais: str = 
     return None
 
 
-def guardar_resultado(usuario_id: str | None, resultado: dict) -> bool:
+def guardar_resultado(usuario_id: Optional[str], resultado: dict) -> bool:
     """
     Inserta el resultado del test en la tabla resultados_test.
     Retorna True si se guardó correctamente, False si no.
