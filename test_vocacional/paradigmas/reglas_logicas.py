@@ -7,10 +7,9 @@ MÓDULO LÓGICO - reglas_logicas.py
 from pyDatalog import pyDatalog
 from test_vocacional.datos.loader import get_knowledge_base, get_config
 
-from typing import TYPE_CHECKING, Any
-if TYPE_CHECKING:
-    PD_Carrera = PD_Interes = PD_Habilidad = PD_Score1 = PD_Score2 = Any
-    pd_carrera_req = pd_tiene_int = pd_tiene_hab = pd_candidato = Any
+# Declaramos las variables para que el linter (líneas rojas) no se queje
+PD_Carrera = PD_Interes = PD_Habilidad = PD_Score1 = PD_Score2 = None
+pd_carrera_req = pd_tiene_int = pd_tiene_hab = pd_candidato = None
 
 pyDatalog.create_terms('PD_Carrera, PD_Interes, PD_Habilidad, PD_Score1, PD_Score2, pd_carrera_req, pd_tiene_int, pd_tiene_hab, pd_candidato')
 
