@@ -53,30 +53,14 @@ def _cargar_datos_supabase() -> dict | None:
 
 
 def _fallback():
-    """Importa los datos estáticos locales como respaldo."""
-    import importlib
-    C = importlib.import_module('test_vocacional.datos.constantes')
+    """Fallback si falla Supabase. Devuelve datos vacíos para evitar error 500."""
     return {
-        'preguntas':    C.PREGUNTAS_INTERESES + C.PREGUNTAS_HABILIDADES,
-        'carreras':     [
-            {'nombre': n, **m} for n, m in C.METADATA_CARRERAS.items()
-        ],
-        'reglas':       [
-            {'carrera': c, 'interes': i, 'habilidad': h}
-            for c, i, h in C.KNOWLEDGE_BASE
-        ],
-        'config': [
-            {'clave': 'UMBRAL_MINIMO',   'valor_numerico': C.UMBRAL_MINIMO},
-            {'clave': 'PESO_PRIMARIO',   'valor_numerico': C.PESO_PRIMARIO},
-            {'clave': 'PESO_SECUNDARIO', 'valor_numerico': C.PESO_SECUNDARIO},
-        ],
-        'relacionados': [
-            {'interes': k, 'relacionado': v}
-            for k, lista in C.INTERESES_RELACIONADOS.items()
-            for v in lista
-        ],
+        'preguntas':    [],
+        'carreras':     [],
+        'reglas':       [],
+        'config':       [],
+        'relacionados': [],
     }
-
 
 def _datos() -> dict:
     """Retorna los datos (Supabase o fallback)."""
