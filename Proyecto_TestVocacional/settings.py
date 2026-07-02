@@ -10,25 +10,46 @@ Para la lista completa de configuraciones y sus valores, ver
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+# Cargar variables de entorno desde .env (si existe)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv no instalado aún; usa variables del sistema
 
 # Construir rutas dentro del proyecto así: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Configuración de desarrollo rápido - inadecuada para producción
-# Ver https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+# ---------------------------------------------------------------------------
+# Configuración de seguridad
+# ---------------------------------------------------------------------------
 
-# ADVERTENCIA DE SEGURIDAD: ¡mantenga en secreto la clave secreta utilizada en producción!
-SECRET_KEY = 'django-insecure-5_)7l=altjcy&p$cw%&8%u@cwg9di@hzq3484&t&mcveth!wf5'
+# ADVERTENCIA DE SEGURIDAD: ¡mantenga en secreto la clave secreta en producción!
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-5_)7l=altjcy&p$cw%&8%u@cwg9di@hzq3484&t&mcveth!wf5'  # solo dev
+)
 
 # ADVERTENCIA DE SEGURIDAD: ¡no ejecute con debug activado en producción!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
+# ---------------------------------------------------------------------------
+# Supabase
+# ---------------------------------------------------------------------------
+SUPABASE_URL      = os.environ.get('SUPABASE_URL', '')
+SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', '')
+
+
+# ---------------------------------------------------------------------------
 # Definición de la aplicación
+# ---------------------------------------------------------------------------
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -71,8 +92,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Proyecto_TestVocacional.wsgi.application'
 
 
-# Base de datos
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+# ---------------------------------------------------------------------------
+# Base de datos — SQLite para sesiones/admin (Supabase para datos del test)
+# ---------------------------------------------------------------------------
 
 DATABASES = {
     'default': {
@@ -82,43 +104,33 @@ DATABASES = {
 }
 
 
+# ---------------------------------------------------------------------------
 # Validación de contraseñas
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+# ---------------------------------------------------------------------------
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 
+# ---------------------------------------------------------------------------
 # Internacionalización
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
+# ---------------------------------------------------------------------------
 
 LANGUAGE_CODE = 'es-pe'
-
-TIME_ZONE = 'America/Lima'
-
-USE_I18N = True
-
-USE_TZ = True
+TIME_ZONE     = 'America/Lima'
+USE_I18N      = True
+USE_TZ        = True
 
 
+# ---------------------------------------------------------------------------
 # Archivos estáticos (CSS, JavaScript, Imágenes)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
+# ---------------------------------------------------------------------------
 
 STATIC_URL = 'static/'
 
 # Tipo de campo de clave primaria predeterminado
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
