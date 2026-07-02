@@ -1,0 +1,168 @@
+{% extends "test_vocacional/base.html" %}
+
+{% block title %}Registro — Brújula Vocacional{% endblock %}
+
+{% block content %}
+
+<!-- ==================== HERO REGISTRO ==================== -->
+<section class="hero-section" aria-labelledby="registro-heading">
+    <span class="hero-icon" role="img" aria-label="Persona">👤</span>
+    <h1 class="hero-title" id="registro-heading">
+        Antes de comenzar,<br>
+        <span class="highlight-text">cuéntanos sobre ti</span>
+    </h1>
+    <p class="hero-subtitle">
+        Tus datos nos ayudan a <strong>personalizar mejor</strong> tus resultados
+        y guardar tu historial vocacional de forma segura.
+    </p>
+</section>
+
+<!-- ==================== FORMULARIO ==================== -->
+<section class="registro-section" aria-label="Formulario de registro">
+    <div class="registro-card">
+
+        {% if errores %}
+        <div class="registro-errores" role="alert" aria-live="polite">
+            <span>⚠️</span>
+            <ul>
+                {% for error in errores %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'test_vocacional:registro' %}" id="form-registro" novalidate>
+            {% csrf_token %}
+
+            <!-- Nombre (requerido) -->
+            <div class="form-group">
+                <label class="form-label" for="nombre">
+                    Nombre <span class="required-mark">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    class="form-input"
+                    placeholder="¿Cómo te llamas?"
+                    value="{{ form_data.nombre|default:'' }}"
+                    required
+                    autocomplete="given-name"
+                    maxlength="100"
+                >
+            </div>
+
+            <!-- Email (opcional) -->
+            <div class="form-group">
+                <label class="form-label" for="email">
+                    Correo electrónico
+                    <span class="optional-mark">(opcional)</span>
+                </label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-input"
+                    placeholder="tu@correo.com"
+                    value="{{ form_data.email|default:'' }}"
+                    autocomplete="email"
+                    maxlength="200"
+                >
+                <span class="form-hint">Solo para enviarte tus resultados si lo deseas.</span>
+            </div>
+
+            <!-- Edad (opcional) -->
+            <div class="form-group">
+                <label class="form-label" for="edad">
+                    Edad
+                    <span class="optional-mark">(opcional)</span>
+                </label>
+                <input
+                    type="number"
+                    id="edad"
+                    name="edad"
+                    class="form-input form-input--sm"
+                    placeholder="Ej: 17"
+                    value="{{ form_data.edad|default:'' }}"
+                    min="12"
+                    max="99"
+                >
+            </div>
+
+            <!-- País (opcional) -->
+            <div class="form-group">
+                <label class="form-label" for="pais">
+                    País
+                    <span class="optional-mark">(opcional)</span>
+                </label>
+                <input
+                    type="text"
+                    id="pais"
+                    name="pais"
+                    class="form-input"
+                    placeholder="Perú"
+                    value="{{ form_data.pais|default:'Perú' }}"
+                    autocomplete="country-name"
+                    maxlength="80"
+                >
+            </div>
+
+            <!-- Aviso de privacidad -->
+            <p class="privacy-note">
+                🔒 Tus datos se guardan de forma segura en Supabase.
+                No los compartimos con nadie ni los usamos para publicidad.
+            </p>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-full" id="btn-siguiente">
+                Continuar al test →
+            </button>
+
+        </form>
+
+        <p class="skip-link">
+            ¿Prefieres no registrarte?
+            <a href="{% url 'test_vocacional:test' %}" id="btn-omitir">Omitir y continuar →</a>
+        </p>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form  = document.getElementById('form-registro');
+    const input = document.getElementById('nombre');
+
+    // Auto-focus en nombre
+    input.focus();
+
+    // Animación de entrada en la tarjeta
+    const card = document.querySelector('.registro-card');
+    if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(24px)';
+        requestAnimationFrame(() => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        });
+    }
+
+    // Validación client-side
+    form.addEventListener('submit', (e) => {
+        const nombre = input.value.trim();
+        if (!nombre) {
+            e.preventDefault();
+            input.classList.add('form-input--error');
+            input.focus();
+        }
+    });
+
+    input.addEventListener('input', () => {
+        input.classList.remove('form-input--error');
+    });
+});
+</script>
+{% endblock %}
