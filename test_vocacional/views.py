@@ -34,56 +34,6 @@ class HomeView(View):
 
 
 # ---------------------------------------------------------------------------
-# Vista: Registro de usuario (antes del test)
-# ---------------------------------------------------------------------------
-class RegistroView(View):
-    """
-    Página de registro opcional antes del test.
-    GET  → Muestra el formulario.
-    POST → Guarda usuario en Supabase y redirige al test.
-    """
-
-    def get(self, request):
-        return render(request, 'test_vocacional/registro.html')
-
-    def post(self, request):
-        nombre = request.POST.get('nombre', '').strip()
-        email  = request.POST.get('email', '').strip()
-        edad   = request.POST.get('edad', '').strip()
-        pais   = request.POST.get('pais', 'Perú').strip() or 'Perú'
-
-        # Validación mínima
-        errores = []
-        if not nombre:
-            errores.append("El nombre es obligatorio.")
-
-        if errores:
-            return render(request, 'test_vocacional/registro.html', {
-                'errores': errores,
-                'form_data': {
-                    'nombre': nombre,
-                    'email':  email,
-                    'edad':   edad,
-                    'pais':   pais,
-                }
-            })
-
-        # Guardar en Supabase (falla silenciosa si no está configurado)
-        try:
-            from test_vocacional.supabase_client import guardar_usuario
-            edad_int   = int(edad) if edad.isdigit() else None
-            usuario_id = guardar_usuario(nombre, email, edad_int, pais)
-        except Exception:
-            usuario_id = None
-
-        # Guardar en sesión para usarlo al guardar el resultado
-        request.session['usuario_id']     = usuario_id
-        request.session['usuario_nombre'] = nombre
-
-        return redirect('test_vocacional:test')
-
-
-# ---------------------------------------------------------------------------
 # Vista: Test vocacional (cuestionario)
 # ---------------------------------------------------------------------------
 class TestView(View):
@@ -124,10 +74,17 @@ class TestView(View):
                 'usuario_nombre':        request.session.get('usuario_nombre', ''),
             })
 
-        # Guardar resultado en Supabase (falla silenciosa si no está configurado)
+        # Guardar resultado en Supabase (creando usuario anónimo automáticamente)
         try:
-            from test_vocacional.supabase_client import guardar_resultado
+            from test_vocacional.supabase_client import guardar_resultado, guardar_usuario
             usuario_id = request.session.get('usuario_id')
+            
+            # Si no hay usuario, creamos uno anónimo de inmediato para enlazar el resultado
+            if not usuario_id:
+                usuario_id = guardar_usuario("Anónimo", "anonimo@test.com", None, "Perú")
+                request.session['usuario_id'] = usuario_id
+                request.session['usuario_nombre'] = "Anónimo"
+
             guardar_resultado(usuario_id, resultado)
         except Exception:
             pass
