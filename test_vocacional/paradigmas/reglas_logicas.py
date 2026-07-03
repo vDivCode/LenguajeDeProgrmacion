@@ -7,10 +7,6 @@ MÓDULO LÓGICO - reglas_logicas.py
 from pyDatalog import pyDatalog
 from test_vocacional.datos.loader import get_knowledge_base, get_config
 
-# Declaramos las variables para que el linter (líneas rojas) no se queje
-PD_Carrera = PD_Interes = PD_Habilidad = PD_Score1 = PD_Score2 = None
-pd_carrera_req = pd_tiene_int = pd_tiene_hab = pd_candidato = None
-
 pyDatalog.create_terms('PD_Carrera, PD_Interes, PD_Habilidad, PD_Score1, PD_Score2, pd_carrera_req, pd_tiene_int, pd_tiene_hab, pd_candidato')
 
 # Cargar reglas desde Supabase (o fallback)
