@@ -26,7 +26,7 @@ def _cargar_datos_supabase() -> Optional[dict]:
     Retorna None si falla, para activar el fallback.
     """
     try:
-        from test_vocacional.supabase_client import get_client
+        from test_vocacional.services.supabase_client import get_client
         client = get_client()
         if client is None:
             return None

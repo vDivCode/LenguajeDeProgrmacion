@@ -76,7 +76,7 @@ class TestView(View):
 
         # Guardar resultado en Supabase (creando usuario anónimo automáticamente)
         try:
-            from test_vocacional.supabase_client import guardar_resultado, guardar_usuario
+            from test_vocacional.services.supabase_client import guardar_resultado, guardar_usuario
             usuario_id = request.session.get('usuario_id')
             
             # Si no hay usuario, creamos uno anónimo de inmediato para enlazar el resultado
