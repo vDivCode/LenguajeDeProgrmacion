@@ -170,10 +170,11 @@ python manage.py runserver
 
 ## Pruebas y Calidad de Código
 
-El proyecto incluye una suite de pruebas exhaustiva organizada por paradigmas y capas de aplicación, utilizando `pytest` y `pytest-django`. Para ejecutar las pruebas, utilice:
+El proyecto incluye una suite de pruebas exhaustiva organizada por paradigmas y capas de aplicación. Para ejecutar las pruebas, utilice:
 
 ```bash
-pytest
+python manage.py test
+python manage.py test {nombre del test en especifico}
 ```
 
 ### Organización de la Suite de Pruebas
