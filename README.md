@@ -1,128 +1,127 @@
-# Brújula Vocacional — Sistema de Recomendación de Carrera Profesional
+# Brújula Vocacional
+## Sistema de Recomendación de Carrera Profesional Multiparadigma
 
-Sistema web **multiparadigma** en Python / Django que recomienda carreras universitarias basándose en el perfil de intereses y habilidades del usuario.
+Sistema web construido en Python / Django que recomienda carreras universitarias a partir de un test de intereses y habilidades. Es el proyecto final del curso *Lenguaje de Programación*: implementa, sobre un mismo caso de uso, los paradigmas **imperativo/orientado a objetos**, **funcional** y **lógico**.
 
----
-
-## Paradigmas aplicados
-
-| Módulo | Paradigma | Descripción |
-|--------|-----------|-------------|
-| `controller.py` | **Imperativo / OO** | `TestVocacionalController` coordina el flujo completo: valida, parsea, llama a reglas lógicas, llama al ranking funcional y retorna la vista. |
-| `logic_rules.py` | **Lógico** | Usa `pyDatalog` para inferir carreras candidatas mediante hechos (`pd_carrera_req`) y reglas declarativas (`pd_candidato`). Incluye fallback robusto. |
-| `processor.py` | **Funcional** | Pipeline de funciones puras con `map()`, `filter()`, `reduce()` y `lambda`. Implementa un algoritmo de scoring ponderado multi-factor (v2). |
+> Flujo de usuario: Inicio -> Test (18 preguntas) -> Resultados con recomendaciones y gráfico de radar.
 
 ---
 
-## Algoritmo de recomendación (v2)
+## Tabla de contenidos
 
-El scoring ya no es simplemente `(interés + habilidad) / 10`. Ahora usa una fórmula ponderada:
-
-```
-score_primario   = (score_interés_req + score_habilidad_req) / 10 × 100   → peso 70%
-score_secundario = bonus por alineación del perfil con áreas relacionadas  → peso 30%
-afinidad_final   = primario × 0.70 + secundario × 0.30
-```
-
-Esto produce resultados diferenciados: dos usuarios que marcan `5` en el interés principal pueden obtener puntajes distintos si el resto de su perfil difiere.
-
----
-
-## Requisitos
-
-- Python 3.11 o superior
-- Las dependencias están en `requirements.txt`
+- [Descripción del Proyecto](#descripción-del-proyecto)
+- [Funcionalidades del Sistema](#funcionalidades-del-sistema)
+- [Paradigmas Aplicados](#paradigmas-aplicados)
+- [Algoritmo de Recomendación](#algoritmo-de-recomendación)
+- [Arquitectura y Flujo de Datos](#arquitectura-y-flujo-de-datos)
+- [Instalación y Ejecución](#instalación-y-ejecución)
+- [Pruebas](#pruebas)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Despliegue](#despliegue)
 
 ---
 
-## Instalación
+## Descripción del Proyecto
 
-```bash
-python -m venv venv
-# Windows:
-venv\Scripts\activate
-# Linux / Mac:
-source venv/bin/activate
+Brújula Vocacional es una herramienta diseñada para orientar a estudiantes en la elección de su carrera universitaria. A diferencia de los tests tradicionales, este sistema evalúa de forma independiente los intereses y las habilidades del usuario, cruzando estos datos con una base de conocimiento lógica para ofrecer recomendaciones precisas y personalizadas.
 
-pip install -r requirements.txt
-```
+El valor académico del proyecto reside en su naturaleza multiparadigma, demostrando cómo diferentes enfoques de programación pueden resolver partes específicas de un problema de ingeniería dentro de una misma aplicación.
 
 ---
 
-## Ejecución
+## Funcionalidades del Sistema
 
-```bash
-python manage.py runserver
-```
+### Evaluación y Test
+- **Cuestionario de 18 preguntas:** Basado en la escala Likert (1 a 5), dividido en 12 preguntas de intereses vocacionales y 6 de habilidades cognitivas.
+- **Barra de progreso dinámica:** Visualización en tiempo real del avance del usuario, con indicadores específicos para las secciones de intereses y habilidades.
+- **Validación robusta:** Sistema de validación en frontend y backend que identifica respuestas faltantes y realiza un scroll automático hacia la pregunta pendiente para mejorar la usabilidad.
 
-Abrir: `http://127.0.0.1:8000`
+### Análisis y Resultados
+- **Gráfico de Radar Personalizado:** Generación de un perfil visual completo utilizando Canvas API nativa, mostrando el equilibrio entre las diferentes áreas evaluadas.
+- **Ranking de Carreras:** Presentación de un Top 5 de carreras recomendadas, cada una acompañada de su puntaje de afinidad y una breve descripción.
+- **Desglose de Afinidad:** Cada recomendación incluye mini-barras que detallan cuánto aporta el interés, la habilidad y el perfil secundario al puntaje final.
+- **Resumen de Perfil:** Identificación de los 3 principales intereses y habilidades del usuario para una mejor autopercepción.
+
+### Gestión y Persistencia
+- **Almacenamiento Automático:** Registro de cada test realizado en Supabase, vinculando resultados a usuarios (registrados o anónimos) para análisis posteriores.
+- **Sección de Orientación:** Incluye un apartado de "¿Qué hacer ahora?" con pasos de acción sugeridos tras obtener los resultados.
+- **Administración de Datos:** Las preguntas, carreras y reglas lógicas son gestionadas externamente, permitiendo actualizaciones del catálogo sin modificar el código fuente.
+
+---
+
+## Paradigmas Aplicados
+
+El núcleo del proyecto reside en la convivencia de tres paradigmas de programación, ubicados en `test_vocacional/paradigmas/`:
+
+| Paradigma | Archivo | Función Específica |
+| :--- | :--- | :--- |
+| **Imperativo / OO** | `controlador_imperativo.py` | Gestiona el estado del proceso, valida la integridad de los datos y orquesta la comunicación entre los demás módulos. |
+| **Lógico** | `reglas_logicas.py` | Utiliza el motor `pyDatalog` para realizar inferencias sobre qué carreras cumplen con los requisitos mínimos de interés y habilidad. |
+| **Funcional** | `procesador_funcional.py` | Aplica transformaciones de datos mediante funciones puras y operaciones de orden superior para calcular el ranking final. |
+
+---
+
+## Algoritmo de Recomendación
+
+El scoring se basa en una fórmula de afinidad ponderada (v2) que prioriza la alineación directa pero considera la versatilidad del perfil:
+
+1. **Score Primario (70%):** Promedio de la coincidencia exacta entre el interés y la habilidad requerida por la carrera.
+2. **Score Secundario (30%):** Bonus calculado a partir de la alineación del usuario con áreas de conocimiento relacionadas.
+3. **Umbral de Corte:** Solo se muestran carreras con una afinidad superior al 40%, garantizando recomendaciones relevantes.
+
+---
+
+## Arquitectura y Flujo de Datos
+
+- **Capa de Datos:** Implementa un cargador centralizado (`loader.py`) que consume la API de Supabase y utiliza `@lru_cache` para optimizar el rendimiento y reducir la latencia de red.
+- **Capa de Servicios:** El cliente de Supabase gestiona la persistencia de resultados de forma desacoplada, asegurando que fallos en la red no interrumpan la experiencia del usuario.
+- **Backend:** Desarrollado sobre Django 5.0, aprovechando su sistema de sesiones para el manejo temporal de resultados y su motor de plantillas para el renderizado dinámico.
+
+---
+
+## Instalación y Ejecución
+
+1. **Preparación:**
+   ```bash
+   git clone https://github.com/vDivCode/LenguajeDeProgrmacion.git
+   cd LenguajeDeProgrmacion
+   python -m venv venv
+   source venv/bin/activate  # venv\Scripts\activate en Windows
+   pip install -r requirements.txt
+   ```
+
+2. **Configuración de Entorno:**
+   Cree un archivo `.env` con las siguientes variables:
+   - `DJANGO_SECRET_KEY`
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+
+3. **Inicio del Sistema:**
+   ```bash
+   python manage.py migrate
+   python manage.py runserver
+   ```
 
 ---
 
 ## Pruebas
 
-```bash
-python manage.py test test_vocacional
+Se utiliza `pytest` para garantizar la integridad de los algoritmos de recomendación y el flujo de navegación:
+- **Pruebas de Paradigmas:** Validación individual de los módulos lógico, funcional e imperativo.
+- **Pruebas de Vistas:** Verificación del ciclo completo de petición-respuesta y manejo de sesiones.
+
+---
+
+## Estructura del Proyecto
+
+```text
+test_vocacional/
+├── paradigmas/     # Lógica multimodelo (Corazón del sistema)
+├── datos/          # Consumo de API y caché de configuración
+├── services/       # Integración con base de datos externa
+├── templates/      # Interfaces de usuario (Django Templates)
+└── tests/          # Suite de validación técnica
 ```
 
 ---
 
-## Estructura del proyecto
-
-```
-Proyecto_TestVocacional/
-├── manage.py
-├── requirements.txt
-├── db.sqlite3
-├── run_server.bat
-│
-├── Proyecto_TestVocacional/       # Configuración Django
-│   ├── settings.py
-│   ├── urls.py
-│   ├── wsgi.py
-│   └── asgi.py
-│
-└── test_vocacional/               # App principal
-    ├── controller.py              # Paradigma Imperativo / OO
-    ├── logic_rules.py             # Paradigma Lógico (pyDatalog)
-    ├── processor.py               # Paradigma Funcional
-    ├── views.py                   # Vistas Django
-    ├── urls.py                    # Rutas de la app
-    ├── models.py
-    ├── tests.py                   # Suite de pruebas (4 clases)
-    └── templates/
-        └── test_vocacional/
-            ├── base.html          # Layout base (navbar, footer, estilos globales)
-            ├── home.html          # Portada con estadísticas animadas
-            ├── test.html          # Cuestionario con progreso por sección
-            └── results.html       # Resultados con radar, mini-barras y pasos siguientes
-```
-
----
-
-## Carreras incluidas (24)
-
-| Área | Carreras |
-|------|---------|
-| Tecnología | Desarrollo de Software y Cloud · IA y Ciencia de Datos · Ciberseguridad |
-| Salud | Medicina y Cirugía · Psicología Clínica · Enfermería |
-| Negocios | Administración Corporativa · Marketing Digital · Economía y Finanzas |
-| Derecho | Derecho Corporativo · Relaciones Internacionales |
-| Ingeniería | Ingeniería Civil · Arquitectura · Ingeniería Mecánica |
-| Ciencias | Biotecnología · Química y Farmacia · Ciencias Ambientales · Geología |
-| Artes | Diseño Gráfico/UX · Artes Visuales · Periodismo · Música · Teatro · Gastronomía |
-
----
-
-## Funcionalidades del sistema (v2)
-
-- **Test con 18 preguntas** en escala Likert (12 de interés + 6 de habilidad)
-- **Barra de progreso sticky** con mini-contadores por sección (Intereses / Habilidades)
-- **Badge de categoría** en cada pregunta
-- **Validación frontend** con scroll automático a la primera pregunta sin responder y botón bloqueado hasta completar
-- **Mensajes de error amigables** que usan el texto de la pregunta, no IDs técnicos
-- **Gráfico de radar** del perfil completo (Canvas API puro, sin librerías externas)
-- **Mini-barras de componente** por carrera (interés requerido, habilidad requerida, perfil secundario)
-- **Top 3** de intereses y habilidades visibles en el perfil
-- **Sección "¿Qué hacer ahora?"** con pasos de acción post-test
-- **Estadísticas animadas** en la portada con count-up al entrar en el viewport
