@@ -49,6 +49,61 @@ El valor académico del proyecto reside en su naturaleza multiparadigma, demostr
 
 ---
 
+## Estructura del Proyecto
+
+```text
+LenguajeDeProgrmacion/
+├── manage.py
+├── requirements.txt
+├── build.sh                        # Script de build para despliegue (Render)
+├── clean.ps1                       # Limpieza de archivos temporales (Windows)
+├── .env.example                    # Plantilla de variables de entorno
+├── GUIA_EXPOSICION.md              # Guía de exposición del proyecto
+│
+├── Proyecto_TestVocacional/        # Configuración del proyecto Django
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+│
+└── test_vocacional/                # App principal
+    ├── apps.py
+    ├── views.py                    # Vistas Django (Home, Test, Resultados)
+    ├── urls.py                     # Rutas de la app
+    │
+    ├── paradigmas/                 # Implementación de los tres paradigmas
+    │   ├── controlador_imperativo.py
+    │   ├── procesador_funcional.py
+    │   └── reglas_logicas.py
+    │
+    ├── datos/
+    │   └── loader.py               # Carga de datos desde Supabase + fallback + caché
+    │
+    ├── services/
+    │   └── supabase_client.py      # Cliente Supabase (usuarios y resultados)
+    │
+    ├── tests/                      # Suite de pruebas por paradigma
+    │   ├── fixtures.py
+    │   ├── test_imperativo.py
+    │   ├── test_funcional.py
+    │   ├── test_logico.py
+    │   └── test_views.py
+    │
+    ├── templates/
+    │   ├── componentes/             # Partials reutilizables
+    │   └── test_vocacional/
+    │       ├── base.html            # Layout base
+    │       ├── home.html            # Portada
+    │       ├── test.html            # Cuestionario
+    │       └── results.html         # Resultados
+    │
+    └── static/test_vocacional/      # CSS / JS propios (Canvas API)
+```
+
+
+---
+
+
 ## Paradigmas Aplicados
 
 El núcleo del proyecto reside en la convivencia de tres paradigmas de programación, ubicados en `test_vocacional/paradigmas/`:
@@ -81,47 +136,70 @@ El scoring se basa en una fórmula de afinidad ponderada (v2) que prioriza la al
 
 ## Instalación y Ejecución
 
-1. **Preparación:**
+### Pasos Iniciales
+1. **Clonación del repositorio:**
    ```bash
    git clone https://github.com/vDivCode/LenguajeDeProgrmacion.git
    cd LenguajeDeProgrmacion
+   ```
+2. **Configuración del entorno:**
+   ```bash
    python -m venv venv
    source venv/bin/activate  # venv\Scripts\activate en Windows
    pip install -r requirements.txt
    ```
 
-2. **Configuración de Entorno:**
-   Cree un archivo `.env` con las siguientes variables:
-   - `DJANGO_SECRET_KEY`
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
+### Configuración de Variables de Entorno
+Cree un archivo `.env` en la raíz del proyecto basado en `.env.example`. Estas variables son fundamentales para la seguridad y conectividad del sistema:
 
-3. **Inicio del Sistema:**
-   ```bash
-   python manage.py migrate
-   python manage.py runserver
-   ```
+| Variable | Uso y Propósito |
+| :--- | :--- |
+| `DJANGO_SECRET_KEY` | Clave única utilizada para garantizar la integridad de las sesiones, cookies y firmas criptográficas de Django. |
+| `DJANGO_DEBUG` | Controla el modo de depuración. Debe ser `True` en desarrollo y `False` en producción para evitar fugas de información técnica. |
+| `SUPABASE_URL` | Dirección URL del proyecto en Supabase. Necesaria para que el sistema sepa a qué instancia de base de datos conectarse. |
+| `SUPABASE_ANON_KEY` | Clave pública de API. Permite que el sistema realice consultas y guarde resultados en Supabase bajo las políticas de seguridad configuradas. |
 
----
-
-## Pruebas
-
-Se utiliza `pytest` para garantizar la integridad de los algoritmos de recomendación y el flujo de navegación:
-- **Pruebas de Paradigmas:** Validación individual de los módulos lógico, funcional e imperativo.
-- **Pruebas de Vistas:** Verificación del ciclo completo de petición-respuesta y manejo de sesiones.
-
----
-
-## Estructura del Proyecto
-
-```text
-test_vocacional/
-├── paradigmas/     # Lógica multimodelo (Corazón del sistema)
-├── datos/          # Consumo de API y caché de configuración
-├── services/       # Integración con base de datos externa
-├── templates/      # Interfaces de usuario (Django Templates)
-└── tests/          # Suite de validación técnica
+### Inicio del Sistema
+Una vez configuradas las variables, ejecute los siguientes comandos:
+```bash
+python manage.py migrate
+python manage.py runserver
 ```
 
 ---
+
+## Pruebas y Calidad de Código
+
+El proyecto incluye una suite de pruebas exhaustiva organizada por paradigmas y capas de aplicación, utilizando `pytest` y `pytest-django`. Para ejecutar las pruebas, utilice:
+
+```bash
+pytest
+```
+
+### Organización de la Suite de Pruebas
+
+#### 1. Pruebas del Paradigma Imperativo (`test_imperativo.py`)
+- **Validación de Datos:** Verifica que el controlador identifique correctamente formularios incompletos o valores fuera de rango.
+- **Parseo de Respuestas:** Asegura que los IDs de las preguntas se mapeen correctamente a sus categorías correspondientes.
+- **Orquestación del Pipeline:** Valida que el flujo secuencial entre los paradigmas lógico y funcional se ejecute sin errores.
+
+#### 2. Pruebas del Paradigma Lógico (`test_logico.py`)
+- **Motor de Inferencia:** Evalúa que `pyDatalog` identifique correctamente las carreras candidatas basándose en los hechos inyectados.
+- **Manejo de Fallbacks:** Verifica que, en caso de fallo del motor lógico, el sistema active la versión imperativa equivalente para no interrumpir el servicio.
+- **Limpieza de Hechos:** Asegura que el motor lógico se limpie después de cada consulta para evitar contaminación de datos entre usuarios.
+
+#### 3. Pruebas del Paradigma Funcional (`test_funcional.py`)
+- **Cálculo de Scoring:** Valida la precisión de la fórmula ponderada (70/30) mediante casos de prueba con valores conocidos.
+- **Funciones de Orden Superior:** Prueba la integridad de las operaciones `map`, `filter` y `reduce` utilizadas para transformar el catálogo de carreras.
+- **Ranking y Filtrado:** Verifica que solo las carreras que superan el umbral del 40% aparezcan en el ranking final y que estén correctamente ordenadas.
+
+#### 4. Pruebas de Integración y Vistas (`test_views.py`)
+- **Ciclo de Vida HTTP:** Simula peticiones GET y POST para asegurar que las rutas (`/`, `/test/`, `/resultados/`) respondan correctamente.
+- **Gestión de Sesiones:** Valida que los resultados se guarden y recuperen correctamente de la sesión de Django.
+- **Simulación de Datos (Mocking):** Utiliza `fixtures.py` para simular la respuesta de Supabase, permitiendo ejecutar la suite completa sin necesidad de conexión a internet.
+
+
+
+---
+
 
